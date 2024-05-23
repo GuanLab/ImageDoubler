@@ -1,5 +1,6 @@
 
 import os
+import sys
 import pandas as pd
 from glob import glob
 
@@ -21,7 +22,7 @@ def get_kallisto_cmd(file1, file2, outdir):
 files_r1 = sorted(glob("split/*/*R1.fastq"))
 files_r2 = sorted(glob("split/*/*R2.fastq"))
 
-columns = pd.read_csv("columns.csv")
+columns = pd.read_csv(sys.argv[1])
 barcode2cols = dict(zip(columns["index"], columns["column"]))
 
 for file_r1, file_r2 in zip(files_r1, files_r2):

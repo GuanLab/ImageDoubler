@@ -1,6 +1,6 @@
 library(tximport)
 
-t2g <- read.table("../refs/transcript_to_gene.tsv", sep = "\t", header = F)
+t2g <- read.table("transcript_to_gene.tsv", sep = "\t", header = F)
 
 files <- list.files("../C1-SUM149-H1975/gene", pattern = ".h5", recursive = T, full.names = T)
 filename <- unlist(lapply(files, function(x) strsplit(x, split = "/")[[1]][4]))
