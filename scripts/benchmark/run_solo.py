@@ -69,49 +69,29 @@ def detect_and_evaluate(adata, min_cells=None, n_top_genes=None):
     df["prediction"] = solo.predict(soft=False)
     adata.obs[f"preds_{identifier}"] = df["prediction"]
     
-    df_eva = adata.obs[adata.obs["class"].notnull() & (adata.obs["class"] != "missing")]
-    # print(df_eva)
-    # print(df_eva[f"preds_{identifier}"])
-    # print(df_eva["class"])
-    adata.uns[f"eva_{identifier}"] = evaluate(df_eva, "class", f"preds_{identifier}")
-    
-def re_evaluate(adata):
-    # to remove the difficults
     df_eva = adata.obs[adata.obs["class"].notnull() & 
                        (adata.obs["class"] != "missing") &
                        (adata.obs["difficult"] == "False")]
-    pred_cols = [col for col in adata.obs.columns if col.startswith("preds_")]
-    for col in pred_cols:
-        identifier = col.replace("preds_", "")
-        adata.uns[f"eva_{identifier}"] = evaluate(df_eva, "class", f"preds_{identifier}")
+    adata.uns[f"eva_{identifier}"] = evaluate(df_eva, "class", f"preds_{identifier}")
 
 
-# adata_img5 = read_counts("../counts/raw_counts_img5_glevel.txt", "Image5", exclude_missing=False)
-# adata_img5_noMissing = read_counts("../counts/raw_counts_img5_glevel.txt", "Image5", exclude_missing=True)
-# adata_img11 = read_counts("../counts/raw_counts_img11_glevel.txt", "Image11", exclude_missing=False)
-# adata_img11_noMissing = read_counts("../counts/raw_counts_img11_glevel.txt", "Image11", exclude_missing=True)
+adata_img5 = read_counts("../counts/raw_counts_img5_glevel.txt", "Image5", exclude_missing=False)
+adata_img5_noMissing = read_counts("../counts/raw_counts_img5_glevel.txt", "Image5", exclude_missing=True)
+adata_img11 = read_counts("../counts/raw_counts_img11_glevel.txt", "Image11", exclude_missing=False)
+adata_img11_noMissing = read_counts("../counts/raw_counts_img11_glevel.txt", "Image11", exclude_missing=True)
 
-adata_img5 = sc.read_h5ad("solo_img5.h5ad")
-adata_img11 = sc.read_h5ad("solo_img11.h5ad")
-adata_img5_noMissing = sc.read_h5ad("solo_img5_noMissing.h5ad")
-adata_img11_noMissing = sc.read_h5ad("solo_img11_noMissing.h5ad")
-
-# detect_and_evaluate(adata_img5);
-# detect_and_evaluate(adata_img5, 1, 2000);
-# for min_cells in [None, 1, 10]:
-#     for n_top_genes in [None, 2000, 5000]:
-#         detect_and_evaluate(adata_img5, min_cells, n_top_genes)
-#         detect_and_evaluate(adata_img11, min_cells, n_top_genes)
+detect_and_evaluate(adata_img5);
+detect_and_evaluate(adata_img5, 1, 2000);
+for min_cells in [None, 1, 10]:
+    for n_top_genes in [None, 2000, 5000]:
+        detect_and_evaluate(adata_img5, min_cells, n_top_genes)
+        detect_and_evaluate(adata_img11, min_cells, n_top_genes)
         
-# for min_cells in [None, 1, 10]:
-#     for n_top_genes in [None, 2000, 5000]:
-#         detect_and_evaluate(adata_img5_noMissing, min_cells, n_top_genes)
-#         detect_and_evaluate(adata_img11_noMissing, min_cells, n_top_genes)
+for min_cells in [None, 1, 10]:
+    for n_top_genes in [None, 2000, 5000]:
+        detect_and_evaluate(adata_img5_noMissing, min_cells, n_top_genes)
+        detect_and_evaluate(adata_img11_noMissing, min_cells, n_top_genes)
 
-re_evaluate(adata_img5)
-re_evaluate(adata_img11)
-re_evaluate(adata_img5_noMissing)
-re_evaluate(adata_img11_noMissing)
 
 print(adata_img5.uns)
 adata_img5.write_h5ad("solo_img5.h5ad")

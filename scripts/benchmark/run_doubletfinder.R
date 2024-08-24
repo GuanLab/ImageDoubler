@@ -2,16 +2,21 @@
 library("DoubletFinder")
 library(Seurat)
 library(reticulate)
+library(dplyr)
 
 rm(list = ls())
 setwd("~/Desktop/GuanLab/single-cell-image/expression/DoubletFinder/")
+
+sklearn <- import("sklearn.metrics")
+np <- import("numpy")
 
 # without gold standards
 counts_img5_glevel <- read.table("../raw_counts_img5_glevel.txt", sep = "\t", header = T)
 counts_img11_glevel <- read.table("../raw_counts_img11_glevel.txt", sep = "\t", header = T)
 targets <- read.csv("../targets.csv")
 
-run_doubletfinder <- function(count_matrix, image_set, include_only_singlet_doublet = F) {
+run_doubletfinder <- function(count_matrix, image_set, expect_doublet_ratio, 
+                              include_only_singlet_doublet = F) {
     targets <- targets[targets$image_set == image_set, ]
     targets$class <- stringr::str_to_title(targets$class)
     if (include_only_singlet_doublet) {
@@ -35,7 +40,7 @@ run_doubletfinder <- function(count_matrix, image_set, include_only_singlet_doub
     
     annotations <- seu@meta.data$seurat_clusters
     homotypic.prop <- modelHomotypic(annotations)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
-    nExp_poi <- round(0.05*nrow(seu@meta.data))  
+    nExp_poi <- round(expect_doublet_ratio*nrow(seu@meta.data))  
     nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
     
     seu <- doubletFinder(seu, 
@@ -65,8 +70,10 @@ evaluate <- function(meta.data) {
     return(results)
 }
 
-seu_img5 <- run_doubletfinder(counts_img5_glevel, "Image5", include_only_singlet_doublet = F)
-seu_img5_noMissing <- run_doubletfinder(counts_img5_glevel, "Image5", include_only_singlet_doublet = T)
+seu_img5 <- run_doubletfinder(counts_img5_glevel, "Image5", expect_doublet_ratio = 0.05,
+                              include_only_singlet_doublet = F)
+seu_img5_noMissing <- run_doubletfinder(counts_img5_glevel, "Image5", expect_doublet_ratio = 0.05,
+                                        include_only_singlet_doublet = T)
 
 write.csv(seu_img5$meta, "results_img5.csv", row.names = F)
 write.csv(seu_img5_noMissing$meta, "results_img5_noMissing.csv", row.names = F)
@@ -74,8 +81,10 @@ write.csv(seu_img5_noMissing$meta, "results_img5_noMissing.csv", row.names = F)
 res_img5 <- evaluate(seu_img5$meta)
 res_img5_noMissing <- evaluate(seu_img5_noMissing$meta)
 
-seu_img11 <- run_doubletfinder(counts_img11_glevel, "Image11", include_only_singlet_doublet = F)
-seu_img11_noMissing <- run_doubletfinder(counts_img11_glevel, "Image11", include_only_singlet_doublet = T)
+seu_img11 <- run_doubletfinder(counts_img11_glevel, "Image11", expect_doublet_ratio = 0.15,
+                               include_only_singlet_doublet = F)
+seu_img11_noMissing <- run_doubletfinder(counts_img11_glevel, "Image11", expect_doublet_ratio = 0.15,
+                                         include_only_singlet_doublet = T)
 
 write.csv(seu_img11$meta, "results_img11.csv", row.names = F)
 write.csv(seu_img11_noMissing$meta, "results_img11_noMissing.csv", row.names = F)
@@ -92,13 +101,13 @@ scores$method <- "DoubletFinder"
 write.csv(scores, "scores.csv")
 
 # re evaluate
-res_img5 <- read.csv("results_img5.csv") %>% 
+res_img5 <- read.csv("results_img5.csv") %>%
     filter(difficult == "False")
-res_img5_noMissing <- read.csv("results_img5_noMissing.csv") %>% 
+res_img5_noMissing <- read.csv("results_img5_noMissing.csv") %>%
     filter(difficult == "False")
-res_img11 <- read.csv("results_img11.csv") %>% 
+res_img11 <- read.csv("results_img11.csv") %>%
     filter(difficult == "False")
-res_img11_noMissing <- read.csv("results_img11_noMissing.csv") %>% 
+res_img11_noMissing <- read.csv("results_img11_noMissing.csv") %>%
     filter(difficult == "False")
 
 score_img5 <- evaluate(res_img5)

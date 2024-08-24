@@ -24,12 +24,19 @@ from utils.utils import get_classes
 from utils.utils_bbox import BBoxUtility
 from utils.utils_fit import fit_one_epoch
 
-save_to = sys.argv[1]  # e.g. loocv/Image7
-model_id = int(sys.argv[2])
+import argparse
 
+parser = argparse.ArgumentParser(description='Arguments for training the FRCNN model.')
+parser.add_argument('--train-anno', type=str, required=True, help='The file include the image path and the bounding box information for training.')
+parser.add_argument('--val-anno', type=str, required=True, help='The file include the image path and the bounding box information for validation.')
+parser.add_argument('--pretrain-weight', type=str, default='model_data/voc_weights_resnet.h5', help='The path to the pretrained model weights. Default is the resnet-50 weights.')
+parser.add_argument('--model-id', type=str, default='0', help='The model id of the saved weights. Default is "0"')
+parser.add_argument('--out-dir', type=str, default="logs/", help='The directory to save the model weights and logs. Default is logs/')
+
+args = parser.parse_args()
 
 classes_path    = 'model_data/class.txt'
-model_path      = 'model_data/voc_weights_resnet.h5'
+model_path      = args.pretrain_weight
 input_shape     = [600, 600]
 backbone        = "resnet50"  # will always use resnet50
 anchors_size    = [10, 20, 40]
@@ -47,8 +54,10 @@ Unfreeze_lr         = 5e-5
 
 Freeze_Train        = True
 
-train_annotation_path   = f'train_val_split/{save_to}/2007_train_{model_id}.txt'
-val_annotation_path     = f'train_val_split/{save_to}/2007_val_{model_id}.txt'
+# train_annotation_path   = f'train_val_split/{save_to}/2007_train_{model_id}.txt'
+train_annotation_path   = args.train_anno
+# val_annotation_path     = f'train_val_split/{save_to}/2007_val_{model_id}.txt'
+val_annotation_path     = args.val_anno
 
 # get class and anchors
 class_names, num_classes = get_classes(classes_path)
@@ -62,7 +71,8 @@ if model_path != '':
     model_rpn.load_weights(model_path, by_name=True)
     model_all.load_weights(model_path, by_name=True)
 
-dir_for_weight_logs = f"logs/{save_to}"
+# dir_for_weight_logs = f"logs/{save_to}"
+dir_for_weight_logs = args.out_dir
 
 callback        = TensorBoard(log_dir=dir_for_weight_logs)
 callback.set_model(model_all)
@@ -126,10 +136,10 @@ if True:
                 anchors, bbox_util, roi_helper)
         
         if val_loss < best_val_loss:  # save the weights for best validation loss
-            model_all.save_weights(f'{dir_for_weight_logs}/model{model_id}_best_val_loss_weights.h5')
+            model_all.save_weights(f'{dir_for_weight_logs}/model{args.model_name}_best_val_loss_weights.h5')
             best_val_loss = val_loss
         if (epoch+1) % 10 == 0:  # save the weights every 10 epochs
-            model_all.save_weights(f'{dir_for_weight_logs}/model{model_id}_ep{epoch:03d}-loss{train_loss:.3f}-val_loss{val_loss:.3f}.h5')
+            model_all.save_weights(f'{dir_for_weight_logs}/model{args.model_name}_ep{epoch:03d}-loss{train_loss:.3f}-val_loss{val_loss:.3f}.h5')
         
         lr = lr*0.96
         K.set_value(model_rpn.optimizer.lr, lr)
@@ -177,10 +187,10 @@ if True:
                 anchors, bbox_util, roi_helper)
         
         if val_loss < best_val_loss:  # save the weights for best validation loss
-            model_all.save_weights(f'{dir_for_weight_logs}/model{model_id}_best_val_loss_weights.h5')
+            model_all.save_weights(f'{dir_for_weight_logs}/model{args.model_name}_best_val_loss_weights.h5')
             best_val_loss = val_loss
         if (epoch+1) % 10 == 0:  # save the weights every 10 epochs
-            model_all.save_weights(f'{dir_for_weight_logs}/model{model_id}_ep{epoch:03d}-loss{train_loss:.3f}-val_loss{val_loss:.3f}.h5')
+            model_all.save_weights(f'{dir_for_weight_logs}/model{args.model_name}_ep{epoch:03d}-loss{train_loss:.3f}-val_loss{val_loss:.3f}.h5')
         
         lr = lr*0.96
         K.set_value(model_rpn.optimizer.lr, lr)

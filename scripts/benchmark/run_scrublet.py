@@ -57,39 +57,21 @@ def detect_and_evaluate(adata):
         predicted_doublets = scrub.call_doublets(threshold=threshold).astype(int)
         adata.obs[f"preds_{identifier}"] = [mapping[x] for x in predicted_doublets]
         
-        df_eva = adata.obs[adata.obs["class"].notnull() & (adata.obs["class"] != "missing")]
+        df_eva = adata.obs[adata.obs["class"].notnull() & 
+                           (adata.obs["class"] != "missing") &
+                           (adata.obs["difficult"] == "False")]
         adata.uns[f"eva_{identifier}"] = evaluate(df_eva, "class", f"preds_{identifier}") 
         
-def re_evaluate(adata):
-    # to remove the difficults
-    df_eva = adata.obs[adata.obs["class"].notnull() & 
-                       (adata.obs["class"] != "missing") &
-                       (adata.obs["difficult"] == "False")]
-    pred_cols = [col for col in adata.obs.columns if col.startswith("preds_")]
-    for col in pred_cols:
-        identifier = col.replace("preds_", "")
-        adata.uns[f"eva_{identifier}"] = evaluate(df_eva, "class", f"preds_{identifier}")
 
+adata_img5 = read_counts("../counts/raw_counts_img5_glevel.txt", "Image5", exclude_missing=False)
+adata_img5_noMissing = read_counts("../counts/raw_counts_img5_glevel.txt", "Image5", exclude_missing=True)
+adata_img11 = read_counts("../counts/raw_counts_img11_glevel.txt", "Image11", exclude_missing=False)
+adata_img11_noMissing = read_counts("../counts/raw_counts_img11_glevel.txt", "Image11", exclude_missing=True)
 
-# adata_img5 = read_counts("../counts/raw_counts_img5_glevel.txt", "Image5", exclude_missing=False)
-# adata_img5_noMissing = read_counts("../counts/raw_counts_img5_glevel.txt", "Image5", exclude_missing=True)
-# adata_img11 = read_counts("../counts/raw_counts_img11_glevel.txt", "Image11", exclude_missing=False)
-# adata_img11_noMissing = read_counts("../counts/raw_counts_img11_glevel.txt", "Image11", exclude_missing=True)
-
-adata_img5 = sc.read_h5ad("scrublet_img5.h5ad")
-adata_img11 = sc.read_h5ad("scrublet_img11.h5ad")
-adata_img5_noMissing = sc.read_h5ad("scrublet_img5_noMissing.h5ad")
-adata_img11_noMissing = sc.read_h5ad("scrublet_img11_noMissing.h5ad")
-
-# detect_and_evaluate(adata_img5)
-# detect_and_evaluate(adata_img11)
-# detect_and_evaluate(adata_img5_noMissing)
-# detect_and_evaluate(adata_img11_noMissing)
-
-re_evaluate(adata_img5)
-re_evaluate(adata_img11)
-re_evaluate(adata_img5_noMissing)
-re_evaluate(adata_img11_noMissing)
+detect_and_evaluate(adata_img5)
+detect_and_evaluate(adata_img11)
+detect_and_evaluate(adata_img5_noMissing)
+detect_and_evaluate(adata_img11_noMissing)
 
 print(adata_img5.uns)
 adata_img5.write_h5ad("scrublet_img5.h5ad")

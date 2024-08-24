@@ -73,8 +73,10 @@ if __name__ == '__main__':
   cut_image(args.image,args.save,args.h1,args.w1,args.h2,args.w2)
 
 
-#python preprocess.py --image="Sh_SUM149 (left) and SUM190 (right)_HT chip (4-19-18).jpg" --save="Image11" --h1=100 --w1=300 --h2=100 --w2=300
-#python preprocess.py --image="Sh_C1 HT_SUM149 (left) and H1975 (right) 8-7-18.jpg" --save="Image5" --h1=50 --w1=300 --h2=250 --w2=300
-#python preprocess.py --image="Sh_Noriaki_G+ and G+T+samples C1 HT 800 (3-14-18).jpg" --save="Image9" --h1=300 --w1=100 --h2=400 --w2=0
-#python preprocess.py --image="Sh_Sammi Wt (Left 1-10) and KO (right 11-20) HT 800 RNAseq (1-31-18).jpg" --save="Image10" --h1=350 --w1=100 --h2=350 --w2=0
+# python split_image.py --image="Sh_SUM149 (left) and SUM190 (right)_HT chip (4-19-18).jpg" --save="Image11" --h1=100 --w1=300 --h2=100 --w2=300
+# python split_image.py --image="Sh_C1 HT_SUM149 (left) and H1975 (right) 8-7-18.jpg" --save="Image5" --h1=50 --w1=300 --h2=250 --w2=300
+# python split_image.py --image="Sh_Noriaki_G+ and G+T+samples C1 HT 800 (3-14-18).jpg" --save="Image9" --h1=300 --w1=100 --h2=400 --w2=0
+# python split_image.py --image="Sh_Sammi Wt (Left 1-10) and KO (right 11-20) HT 800 RNAseq (1-31-18).jpg" --save="Image10" --h1=350 --w1=100 --h2=350 --w2=0
 
+# Other than the above four images, the rest of the images are split with the default parameters, for example:
+# python split_image.py --image="Chip A Sample A (Left) Sample B (Right).jpg" --save="Image1"
