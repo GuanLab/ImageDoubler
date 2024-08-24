@@ -45,7 +45,7 @@ Please follow the READMEs in `data/` and `expression/`
 Please follow the READMEs in `imagedoubler_paper/model_data/` for the ResNet-50 weights and `imagedoubler_paper/logs/` for ImageDoubler weights
 
 ### Train and evaluate from scratch
-The following codes have been tested on both Linux and Windows system. Make sure that you have downloaded the ResNet-50 weights has been downloaded.
+The training and evaluation codes have been tested on both Linux and Windows system. Make sure that you have downloaded the ResNet-50 weights has been downloaded.
 
 1. Prepare the data splits for cross-validation
 ```bash
