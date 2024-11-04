@@ -1,7 +1,7 @@
 
-Weights can be downloaded from:
-* [labeler1_weights.zip](https://www.dropbox.com/scl/fi/14ktxfzelb4vgh52ve8qm/labeler1_weights.zip?rlkey=i60p0zt4t1z2xxwcx6vhog5gv&dl=0)
-* [labeler2_weights.zip](https://www.dropbox.com/scl/fi/oru17gx7ko1xkgsb5qtlw/labeler2_weights.zip?rlkey=cybddf8vss2xoewgrhwxf5zvi&dl=0)
+Weights can be downloaded from this figshare repository: [ImageDoubler pretrained weights](https://doi.org/10.6084/m9.figshare.27606801.v1). It contains two zip files of weights:  
+* labeler1_weights.zip: all the weights for the models trained on image data labeled by the first labeler
+* labeler2_weights.zip: all the weights for the models trained on image data labeled by the second labeler
 
 ```
 # to use the labeler-1's models
